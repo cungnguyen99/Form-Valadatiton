@@ -1,22 +1,34 @@
 'use strict';
-var students = [
-  {
-    name: 'Cao Viet Ha',
-    age: 14,
-    email: 'abc@gmail.com',
-    phone: 1234567890,
-    address: 'Ha Noi, Viet Nam'
-  },
-  {
-    name: 'Nguyen Thuy Duong',
-    age: 14,
-    email: 'bcd@gmail.com',
-    phone: 1234567890,
-    address: 'Hai Phong, VN'
-  }
-]
+// var students = [
+//   {
+//     name: 'Cao Viet Ha',
+//     age: 14,
+//     email: 'abc@gmail.com',
+//     phone: 1234567890,
+//     address: 'Ha Noi, Viet Nam'
+//   },
+//   {
+//     name: 'Nguyen Thuy Duong',
+//     age: 14,
+//     email: 'bcd@gmail.com',
+//     phone: 1234567890,
+//     address: 'Hai Phong, VN'
+//   }
+// ]
 var editMode = false;
 var studentIdTmp;
+// localStorage.setItem('listStudents',JSON.stringify(students));
+var nameData='listStudents';
+
+var dataStudent=localStorage.getItem(nameData);
+
+var listStudent;
+
+if(dataStudent){
+  listStudent=JSON.parse(dataStudent)
+}else{
+  listStudent=[];
+}
 document.addEventListener('DOMContentLoaded', function() {
     renderStudents();
     validation.init([
@@ -82,7 +94,7 @@ function submitClickHandle() {
     }
   }
 function renderStudents(){
-    var content=students.map(function(items,index){
+    var content=listStudent.map(function(items,index){
         var html = '';
         html += '<li class="student">'
         html += '<p><span>Name:</span>' + items.name + '</p>'
@@ -151,7 +163,7 @@ function onEditStudent(index) {
 }
 
 function getStudent(index) {
-  return students[index];
+  return listStudent[index];
 }
 
 function editStudentHandle() {
@@ -164,12 +176,14 @@ function editStudentHandle() {
   disableEditMode()
 
   setHTML('.createStudent', 'Create')
+  
+  localStorage.setItem('listStudents',JSON.stringify(listStudent))
 
   studentFormReset()
 }
 
 function editStudent(index, student) {
-  students[index] = student;
+  listStudent[index] = student;
 }
 
 function setHTML(selector, html) {
@@ -178,11 +192,12 @@ function setHTML(selector, html) {
 }
 
 function addStudent(student) {
-  students.push(student)
+  listStudent.push(student)
+  localStorage.setItem('listStudents',JSON.stringify(listStudent));
 }
 
 function studentDelete(index) {
-  students.splice(index, 1)
+  listStudent.splice(index, 1)
 }
 
 function onDeleteStudent(index) {
@@ -190,4 +205,5 @@ function onDeleteStudent(index) {
     studentDelete(index)
     renderStudents()
   }
+  localStorage.setItem('listStudents',JSON.stringify(listStudent))
 }
