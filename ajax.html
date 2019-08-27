@@ -11,6 +11,10 @@
 </head>
 
 <body>
+    <div class="container">
+        <div id="content">
+        </div>
+    </div>
     <script>
         //Tạo ra 1 http request để gửi đến server
 
@@ -30,12 +34,23 @@
          * khi readyState=2 có nghĩa request đã được nhận
          * khi readyState=3 có nghĩa request đang xử lý
          * khi readyState=4 có nghĩa request đã hoàn thành
+         * this.responseText trả về 1 chuỗi json string và ta có thể parse để làm việc với nó.
          */
 
         http.onreadystatechange=function(){
-
+            if(this.readyState==4){
+                document.getElementById('content').innerHTML=render(this.responseText);
+            }
         }
 
+        function render(lesson){
+            var data=JSON.parse(lesson);
+            var content=data.map(function(item){
+                return '<div class="card"><h3> Type of products: ' + item.userId + '</h3>' +'<div class="card-body"><span> ID of products: '+item.id+
+                '<p class="card-title">'+item.title+'</p>'+'<em class="card-text">'+item.body+'</em></div></div>';
+            });
+            return content.join(' ');
+        }
     </script>
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
         integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
