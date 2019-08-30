@@ -38,7 +38,7 @@
          */
 
         http.onreadystatechange=function(){
-            if(this.readyState==4){
+            if(this.readyState==4){//hoặc this.readyState==this.DONE . tất cả this ở đây đại diện cho biến http
                 document.getElementById('content').innerHTML=render(this.responseText);
             }
         }
