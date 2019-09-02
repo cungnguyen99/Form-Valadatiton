@@ -18,10 +18,16 @@
         <button class="btn btn-primary text-center" id="btn">Try me and Click</button>
     </div>
 
+    <div class="container my-4">
+        <h3>Mở console và click vào 2 button</h3>
+        <button class="btn btn-success" onclick="addCourses()">Add courses</button>
+        <button class="btn btn-warning" onclick="getCourses()">Get courses</button>
+    </div>
+
     <div class="container">
-            <div id="content">
-            </div>
+        <div id="content">
         </div>
+    </div>
     <script>
         //Tạo ra 1 http request để gửi đến server
 
@@ -60,6 +66,101 @@
         }
 
 
+        //Post data
+        function jsonDecode(jsonString){
+            try {
+                return JSON.parse(jsonString)
+            } catch (error) {
+                console.error("Json string is not values")
+            }
+        }
+
+        function jsonEncode(jsonObj){
+            try {
+                return JSON.stringify(jsonObj)
+            } catch (error) {
+                console.error("jsonObj is not values")
+            }
+        }
+
+        function callAPI(method, url, callBack, params){
+            if(!params){
+                //params là tham số truyền vào để sử dụng. Nếu k truyền params thì gán nó bằng 1 obj rỗng
+                params={}
+            }
+            var xhttp=new XMLHttpRequest();
+            xhttp.onreadystatechange=function(){
+                if(this.readyState===4){
+                    if(typeof callBack==='function'){
+                        callBack(jsonDecode(this.responseText),this.status)
+                    }
+                }
+            }
+            xhttp.open(method, url, true)
+            xhttp.setRequestHeader(
+                "Content-type",
+                "application/x-www-form-urlencoded"
+            )
+            xhttp.send(objectToQueryString(params))
+        }
+
+        function objectToQueryString(object){
+            //tạo ra 1 arr gồm các key của object. Khi truyền object ở dưới vào thì arr key là [name, species...]
+            var objectKeys=Object.keys(object)
+            console.log(objectKeys)
+            var queryArray=[]
+            for (const objectkey of objectKeys) {
+                //lấy ra giá trị của các key cách 2 object["key name"]
+                var objectValue=object[objectKeys]
+                queryArray.push(objectkey+"="+objectValue)
+            }
+            return queryArray.join("&");
+        }
+
+        function addCourses(){
+            callAPI(
+                "post",
+                "https://learnwebcode.github.io/json-example/animals-1.json",
+                //đây là hàm callback của hàm callApi ở trên và jsonDecode để biến nó thành 1 arr
+                function(newCourses, statusCode){
+                    if(statusCode===201){
+                        console.log(newCourses)
+                    }
+                },
+                {
+                    "name":"Tom",
+                    "species" : "brid",
+                    "foods": {
+                    "likes": ["tuna", "catnip"],
+                    "dislikes": ["ham", "zucchini"]
+                            }
+                }
+            )
+        }
+
+
+        function getCourses(){
+            callAPI(
+                "get",
+                "https://learnwebcode.github.io/json-example/animals-1.json",
+                //đây là hàm callback của hàm callApi ở trên và jsonDecode để biến nó thành 1 arr
+                function(newCourses, statusCode){
+                    if(statusCode===201){
+                        console.log(newCourses)
+                    }
+                },
+                {
+                    "name":"Tom",
+                    "species" : "brid",
+                    "foods": {
+                    "likes": ["tuna", "catnip"],
+                    "dislikes": ["ham", "zucchini"]
+                            }
+                }
+            )
+        }
+        
+        //Get and load more data
         var btn=document.getElementById('btn')
         var dataLoad=1;
         btn.addEventListener('click',function(){
@@ -67,7 +168,6 @@
         ourRequest.open("GET","https://learnwebcode.github.io/json-example/animals-"+dataLoad+".json")
         ourRequest.onload=function(){
             var ourData=JSON.parse(this.responseText)
-            console.log(ourData)
             renderHTML(ourData)
         }
         ourRequest.send()
